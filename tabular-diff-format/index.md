@@ -1,8 +1,8 @@
 ---
-title: Coopy highlighter diff format for tables
+title: Highlighter tabular diff format
 layout: spec
-version: 0.8
-last_update: 27 May 2014
+version: 0.9
+last_update: 11 Feb 2015
 created: 16 December 2011
 author: Paul Fitzpatrick (Data Commons Co-op)
 summary: The highlighter diff format is a format for expressing the difference
@@ -83,6 +83,8 @@ summary: The highlighter diff format is a format for expressing the difference
 
 ### Changelog
 
+- `0.8` -> `0.9`: Specify index rows/columns, see [#162](https://github.com/dataprotocols/dataprotocols/issues/162)
+
 - `0.7` -> `0.8`: Clean up row/column reordering, see [#123](https://github.com/dataprotocols/dataprotocols/issues/123)
 
 ### Table of Contents 
@@ -128,16 +130,23 @@ is omitted.
  -   Omitted blocks of rows or columns should be marked with a
      row/column full of "..." cells.
 
-In addition, the diff contains the following special rows and columns:
+In addition, the diff will contain special rows and columns, some
+mandatory, some optional.
 
- -   The *action* column. This is always present, and is the first
-     column in the diff if columns are ordered. If columns are *not*
-     ordered, it is the column named `__hilite_diff__`.
- -   A *header* row with column names. This row can be recognized since
-     it will have the tag `@@` in the action column.
+ -   The *action* column. This is always present.  If columns are ordered,
+     the action column will be the first column containing the cell `@@`.
+     If columns are *not* ordered, it is the column named `__hilite_diff__`.
+ -   A *header* row with column names. This row has the tag `@@` in the 
+     action column.
  -   A *schema* row that is needed when the column structure differs
-     between tables. This row can be recognized since it will have the
-     tag `!` in the action column.
+     between tables. This row has the tag `!` in the action column.
+ -   The *index* column.  This is optional.  If columns are 
+     ordered, the index column is the first column with a cell containing
+     the character `:` in the header row.  If columns are *not* ordered,
+     it is the column named `__hilite_index__`. If an index column in present
+     then an index row must also be present.
+ -   The *index* row.  This is optional.  This row has the tag `@:@` in
+     the index column.
 
 Here's an example diff, where the tables being compared share the same
 three columns:
@@ -370,6 +379,21 @@ If a diff that contains a `:` tag is used to patch a table
 for which column order is not meaningful, that tag should simply be 
 ignored.
 
+## The index row and column
+
+Cells in the index rows and columns contain values of the form `label1:label2`,
+where `label1` and `label2` are labels identifying row or column 
+location in the tables being compared.  A label of `-` represents absence.
+
+ * Labels in the index column are non-negative decimal integers, and
+   correspond to row numbers.  The labels given in the row header may
+   be used to determine where row numbers start.
+
+ * Labels in the index row may be either:
+   - non-negative decimal integers, in which case labels must be provided
+     in the action column to determine where column numbers start.
+   - numbers represented in base 26, using the letters `A` through `Z` as digits,
+     with `A` representing the first column.
 
 ## Reference: action column tags
 
