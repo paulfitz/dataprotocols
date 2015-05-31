@@ -1,7 +1,7 @@
 name: Data Protocols
 pygments: true
 markdown: kramdown
-baseurl: 
+baseurl: /dataprotocols
 exclude: ["ndjson/index.md"]
 include: ["ndjson/README.md"]
 defaults:
